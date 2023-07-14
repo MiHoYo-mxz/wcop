@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { darkTheme } from "naive-ui";
+  import { darkTheme, type GlobalTheme } from "naive-ui";
   import { NIcon } from "naive-ui";
   import type { MenuOption } from "naive-ui";
   import {
@@ -13,27 +13,18 @@
     SunnyOutline,
   } from "@vicons/ionicons5";
 
-  import { ref, h } from "vue";
+  import { ref, h, type Component } from "vue";
 
   // 导航栏选项激活
   let activeKey = ref<string | null>(null);
   // 导航栏图标渲染函数
-  const renderIcon = (icon: any): any => {
+  const renderIcon = (icon: Component) => {
     return () => h(NIcon, null, { default: () => h(icon) });
   };
   // 导航栏组件数据
   const menuOptions: MenuOption[] = [
     {
-      label: () =>
-        h(
-          "a",
-          {
-            // href: "https://baike.baidu.com/item/%E4%B8%94%E5%90%AC%E9%A3%8E%E5%90%9F",
-            // target: "_blank",
-            rel: "noopenner noreferrer",
-          },
-          "首页"
-        ),
+      label: "首页",
       key: "home",
       icon: renderIcon(Home),
     },
@@ -106,29 +97,43 @@
   ];
 
   // 更改全局主题色
-  let changeGlobalColorShow = ref<boolean>(true);
+  let changeGlobalColorShow = ref(true);
   const dark = darkTheme;
   const emit = defineEmits(["changeGlobalColor"]);
-  const changeGlobal = (dark: any): void => {
+  const changeGlobal = (dark: GlobalTheme) => {
     changeGlobalColorShow.value = !changeGlobalColorShow.value;
     emit("changeGlobalColor", dark);
   };
 </script>
 
 <template>
+  <!-- 顶部导航栏 -->
   <div class="topBar">
+    <!-- 菜单 -->
     <n-menu
+      class="menu"
+      :icon-size="25"
       v-model:value="activeKey"
       mode="horizontal"
-      :options="menuOptions" />
+      :options="menuOptions"
+      style="
+        --n-item-icon-color: rgb(255, 255, 255);
+        --n-item-text-color: rgb(255, 255, 255);
+      " />
+    <!-- 主题切换 -->
     <div class="btn">
       <n-icon
-        size="20"
+        size="28"
+        color="rgb(255,255,255)"
         @click="changeGlobal(dark)"
         v-show="changeGlobalColorShow">
         <SunnyOutline />
       </n-icon>
-      <n-icon size="20" @click="changeGlobal" v-show="!changeGlobalColorShow">
+      <n-icon
+        size="28"
+        color="rgb(255,255,255)"
+        @click="changeGlobal"
+        v-show="!changeGlobalColorShow">
         <Moon />
       </n-icon>
     </div>
@@ -137,9 +142,21 @@
 
 <style lang="scss" scoped>
   .topBar {
+    width: 100%;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    user-select: none;
+    z-index: 99;
+
+    .menu {
+      font-size: 18px;
+    }
 
     .btn {
       height: 100%;
